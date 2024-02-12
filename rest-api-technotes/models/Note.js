@@ -1,9 +1,19 @@
 const mongoose = require("mongoose");
+const AutoIncrement = require("mongoose-sequence")(mongoose)
 const NotesSchema = new mongoose.Schema({
-username:{type:String, required:true},
-password:{type:String, required:true},
-roles:{type:String, default:"employee"},
-active:{type:String, default:"true"},
+  user: { type: mongoose.Schema.Types.ObjectId, required: true ,
+  ref:"User"
+},
+  title: { type: String, required: true },
+  text: { type: String, required: true },
+  completed: { type: Boolean, default: false },
+},
+{
+   timestamps:true
+}
+);
+NotesSchema.plugin(AutoIncrement,{
+   inc_field:"ticket",
+   id:"ticketNums",start_seq:500
 })
-
-module.exports = mongoose.model("Note",NotesSchema);
+module.exports = mongoose.model("Note", NotesSchema);
