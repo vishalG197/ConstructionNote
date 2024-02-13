@@ -1,112 +1,131 @@
-const User = require("../models/User");
-const Note = require("../models/Note");
-const asyncHandler = require("express-async-handler");
-const bcrypt = require("bcrypt");
+const User = require('../models/User')
+const Note = require('../models/Note')
+const bcrypt = require('bcrypt')
 
-//@desc get all users
-//@route GET /users
-//@access Private
-const getAllUsers = asyncHandler(async (req, res) => {
-   const users = await User.find().select("-password").lean();
-   if (!users?.length) {
-      return res.status(400).json({ message: "No users found" });
-   }
-   res.json(users);
-});
+// @desc Get all users
+// @route GET /users
+// @access Private
+const getAllUsers = async (req, res) => {
+    // Get all users from MongoDB
+    const users = await User.find().select('-password').lean()
 
-//@desc create new users
-//@route POST /users
-//@access Private
-const createUsers = asyncHandler(async (req, res) => {
-   const { username, password, roles } = req.body;
+    // If no users 
+    if (!users?.length) {
+        return res.status(400).json({ message: 'No users found' })
+    }
 
-   // confirm data
-   if (!username || !password || !Array.isArray(roles) || !roles.length) {
-      return res.status(400).json({ message: "All fields are required" });
-   }
+    res.json(users)
+}
 
-   // check for duplicate
-   const duplicate = await User.findOne({ username }).lean().exec();
-   if (duplicate) {
-      return res.status(409).json({ message: "Duplicate username" });
-   }
+// @desc Create new user
+// @route POST /users
+// @access Private
+const createNewUser = async (req, res) => {
+    const { username, password, roles } = req.body
 
-   // hash password
-   const hashedpwd = await bcrypt.hash(password, 10); // salt round;
-   const userObject = { username, password: hashedpwd, roles };
+    // Confirm data
+    if (!username || !password) {
+        return res.status(400).json({ message: 'All fields are required' })
+    }
 
-   // create user
-   const user = await User.create(userObject);
-   if (user) {
-      res.status(201).json({ message: `New user ${user.username} created successfully` });
-   } else {
-      res.status(400).json({ message: "Invalid user data received" });
-   }
-});
+    // Check for duplicate username
+    const duplicate = await User.findOne({ username }).collation({ locale: 'en', strength: 2 }).lean().exec()
 
-//@desc update users
-//@route PATCH /users
-//@access Private
-const updateUsers = asyncHandler(async (req, res) => {
-   const { id, username, roles, active, password } = req.body;
-   if (!id || !username || !roles || !active || !active) {
-      return res.status(409).json({ message: "All field are required" });
-   }
+    if (duplicate) {
+        return res.status(409).json({ message: 'Duplicate username' })
+    }
 
-   const user = await User.findById(id).exec();
+    // Hash password 
+    const hashedPwd = await bcrypt.hash(password, 10) // salt rounds
 
-   if (!user) {
-      return res.status(400).json({ message: "User not found" });
-   }
+    const userObject = (!Array.isArray(roles) || !roles.length)
+        ? { username, "password": hashedPwd }
+        : { username, "password": hashedPwd, roles }
 
-   // duplicate
-   const duplicate = await User.findOne({ username }).lean().exec();
+    // Create and store new user 
+    const user = await User.create(userObject)
 
-   // allow update to the original user
-   if (duplicate && duplicate._id.toString() !== id) {
-      return res.status(409).json({ message: "Duplicate username" });
-   }
+    if (user) { //created 
+        res.status(201).json({ message: `New user ${username} created` })
+    } else {
+        res.status(400).json({ message: 'Invalid user data received' })
+    }
+}
 
-   user.username = username;
-   user.roles = roles;
-   user.active = active;
+// @desc Update a user
+// @route PATCH /users
+// @access Private
+const updateUser = async (req, res) => {
+    const { id, username, roles, active, password } = req.body
 
-   if (password) {
-      user.password = await bcrypt.hash(password, 10);
-   }
+    // Confirm data 
+    if (!id || !username || !Array.isArray(roles) || !roles.length || typeof active !== 'boolean') {
+        return res.status(400).json({ message: 'All fields except password are required' })
+    }
 
-   const updatedUser = await user.save();
-   res.json({ message: `${updatedUser.username} updated` });
-});
+    // Does the user exist to update?
+    const user = await User.findById(id).exec()
 
-//@desc delete users
-//@route Delete /users
-//@access Private
-const deleteUsers = asyncHandler(async (req, res) => {
-   const { id } = req.body;
-   if (!id) {
-      return res.status(400).json({ message: "User ID required" });
-   }
+    if (!user) {
+        return res.status(400).json({ message: 'User not found' })
+    }
 
-   const note = await Note.findOne({ user: id }).lean().exec();
-   if (note) {
-      return res.status(400).json({ message: "User has assigned notes" });
-   }
+    // Check for duplicate 
+    const duplicate = await User.findOne({ username }).collation({ locale: 'en', strength: 2 }).lean().exec()
 
-   const user = await User.findById(id).exec();
-   if (!user) {
-      return res.status(404).json({ message: "User not found" });
-   }
+    // Allow updates to the original user 
+    if (duplicate && duplicate?._id.toString() !== id) {
+        return res.status(409).json({ message: 'Duplicate username' })
+    }
 
-   const result = await User.deleteOne();
-   const reply = `User ${result.username} with ID ${result._id} deleted`;
+    user.username = username
+    user.roles = roles
+    user.active = active
 
-   res.json(reply);
-});
+    if (password) {
+        // Hash password 
+        user.password = await bcrypt.hash(password, 10) // salt rounds 
+    }
+
+    const updatedUser = await user.save()
+
+    res.json({ message: `${updatedUser.username} updated` })
+}
+
+// @desc Delete a user
+// @route DELETE /users
+// @access Private
+const deleteUser = async (req, res) => {
+    const { id } = req.body
+
+    // Confirm data
+    if (!id) {
+        return res.status(400).json({ message: 'User ID Required' })
+    }
+
+    // Does the user still have assigned notes?
+    const note = await Note.findOne({ user: id }).lean().exec()
+    if (note) {
+        return res.status(400).json({ message: 'User has assigned notes' })
+    }
+
+    // Does the user exist to delete?
+    const user = await User.findById(id).exec()
+
+    if (!user) {
+        return res.status(400).json({ message: 'User not found' })
+    }
+
+    const result = await user.deleteOne()
+
+    const reply = `Username ${result.username} with ID ${result._id} deleted`
+
+    res.json(reply)
+}
 
 module.exports = {
-   getAllUsers,
-   createUsers,
-   updateUsers,
-   deleteUsers,
-};
+    getAllUsers,
+    createNewUser,
+    updateUser,
+    deleteUser
+}

@@ -33,9 +33,9 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        console.log(username, password)
         try {
             const { accessToken } = await login({ username, password }).unwrap()
+             console.log(accessToken,username,password)
             dispatch(setCredentials({ accessToken }))
             setUsername('')
             setPassword('')
@@ -61,7 +61,7 @@ const Login = () => {
     const errClass = errMsg ? "errmsg" : "offscreen"
 
     if (isLoading) return <PulseLoader color={"#FFF"} />
-console.log()
+
     const content = (
         <section className="public">
             <header>
