@@ -1,37 +1,61 @@
-# Project Title
+# ConstructNotes - Your Construction Companion
 
 ## Introduction
-A brief introduction of your project goes here. You may want to cover the purpose of your project, its core functionality, and what problems it solves.
+Streamline your construction project management with ConstructNotes, the ultimate app designed to be your indispensable companion on the construction site. Whether you're a project manager, architect, contractor, or any professional involved in construction, this app is tailored to meet your specific needs.
+
 
 ## Project Type
-Frontend | Backend | Fullstack
+Fullstack stack project
 
-## Deplolyed App
-Frontend: https://deployed-site.whatever
-Backend: https://deployed-site.whatever
-Database: https://deployed-site.whatever
+## Deployed App
+Frontend: [Click here](https://consnotes.vercel.app/)
+Backend: [Click here](https://vishalnotes.onrender.com)
 
 ## Directory Structure
 my-app/
-├─ backend/
-├─ frontend/
+├─ construction-notes/
+├─ construction/
 │  ├─ ...
 
 ## Video Walkthrough of the project
-Attach a very short video walkthough of all of the features [ 1 - 3 minutes ]
+Attach a very short video walkthrough of all of the features [ 1 - 3 minutes ]
 
 ## Video Walkthrough of the codebase
-Attach a very short video walkthough of codebase [ 1 - 5 minutes ]
+Attach a very short video walkthrough of the codebase [ 1 - 5 minutes ]
 
 ## Features
-List out the key features of your application.
+Effortless Note-Taking:
+Take quick and detailed notes on the fly. From site observations to material specifications, capture essential information effortlessly.
 
-- Feature 1
-- Feature 2
-- Feature 3
+Multimedia Integration:
+Enhance your notes with photos, sketches, and voice memos. Visualize progress, document issues, and ensure clear communication among your team.
+
+Project Organization:
+Create folders and categories to keep your notes organized by project, location, or phase. Never lose track of important information again.
+
+Real-Time Collaboration:
+Collaborate seamlessly with your team. Share notes, updates, and documents instantly, fostering effective communication and reducing delays.
+
+Offline Access:
+Work without worries even in areas with limited connectivity. ConstructNotes allows offline access, ensuring you can capture critical information anytime, anywhere.
+
+Task Management:
+Transform your notes into actionable tasks. Assign tasks to team members, set deadlines, and track progress within the app.
+
+Document Repository:
+Store and access important documents such as blueprints, permits, and contracts directly within the app. Have all your project-related files in one secure place.
+
+Custom Templates:
+Tailor note templates to suit your specific needs. Whether it's a safety checklist or daily progress report, save time with predefined templates.
+
+Data Security:
+Your data's security is our priority. ConstructNotes employs robust encryption and secure cloud storage to protect your sensitive information.
+
+Reporting Tools:
+Generate insightful reports to analyze project trends, identify challenges, and make informed decisions for smoother project execution.
 
 ## design decisions or assumptions
-List your design desissions & assumptions
+List your design decisions & assumptions
 
 ## Installation & Getting started
 Detailed instructions on how to install, configure, and get the project running. For BE/FS projects, guide the reviewer how to check mongodb schema etc.
@@ -52,20 +76,23 @@ Provide instructions and examples on how to use your project.
 Include screenshots as necessary.
 
 ## Credentials
-Provide user credentials for autheticated pages
+To sign in as the admin
+username: VishalG
+password: VishalG
 
 ## APIs Used
 If your application relies on external APIs, document them and include any necessary links or references.
 
 ## API Endpoints
 In case of Backend Applications provide a list of your API endpoints, methods, brief descriptions, and examples of request/response.
-GET /api/items - retrieve all items
-POST /api/items - create a new item
+GET /users- retrieve all users
+POST /notes - create a new noters
 
 
 ## Technology Stack
 List and provide a brief overview of the technologies used in the project.
-
+- React.js
+- Redux-toolkits
 - Node.js
 - Express.js
 - MongoDB
